@@ -8,13 +8,26 @@ namespace Monster_Trading_Cards_Game
 {
     interface ICard
     {
-        protected string _name { get; set; }
-        
-        protected double _damage { get; set; }
-        protected enum Element_type
+        string name { get; set; }
+        double damage { get;}
+        enum Element_type
         {
             fire,
-            water
+            water,
+            normal
         }
+        Element_type elementType { get; }
+        enum Monster_type
+        {
+            Goblin,
+            Dragon,
+            Wizzard,
+            Knight,
+            Kraken,
+            Elve,
+            Ork,
+            Spell
+        }
+        Monster_type monsterType { get; }
     }
 }
