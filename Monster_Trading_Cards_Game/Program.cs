@@ -78,3 +78,5 @@ namespace Monster_Trading_Cards_Game
 }
 //TODO
 //Unit Testing
+//evtl neue Karten erstellen
+//Class Diagram
