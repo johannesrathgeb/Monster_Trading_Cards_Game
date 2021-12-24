@@ -11,13 +11,19 @@ namespace Monster_Trading_Cards_Game
         User fighter1, fighter2;
         int roundCounter, winner;
         ICard card1, card2;
+        int zeroDamage = 0;
+        int damageMultiplier = 2;
+        int damageDivisor = 2;
+        int winnerElo = 3;
+        int loserElo = 5;
+        int maxRounds = 100;
 
-        public Battle(User fighter1, User fighter2, int roundCounter, int winner)
+        public Battle(User fighter1, User fighter2)
         {
             this.fighter1 = fighter1;
             this.fighter2 = fighter2;
-            this.roundCounter = roundCounter;
-            this.winner = winner;
+            roundCounter = 0;
+            winner = 0;
         }
 
         public void fight()
@@ -56,7 +62,7 @@ namespace Monster_Trading_Cards_Game
                     Console.WriteLine("Player 1 wins!");
                     break;
                 }
-                else if(roundCounter >= 100)
+                else if(roundCounter >= maxRounds)
                 {
                     Console.WriteLine("Draw!");
                     break;
@@ -73,38 +79,29 @@ namespace Monster_Trading_Cards_Game
 
         public void monsterFight(ICard card1, ICard card2)
         {
-            switch(monsterImmune(card1, card2))
+            if(card1.weakness == card2.monsterType)
             {
-                case 0:
-                    battle(card1, card2, card1.damage, card2.damage);
-                    break;
-                case 1:
-                    battle(card1, card2, card1.damage, 0);
-                    break;
-                case 2:
-                    battle(card1, card2, 0, card2.damage);
-                    break;
-                default:
-                    break;
+                battle(card1, card2, zeroDamage, card2.damage);
+            }
+            else if(card2.weakness == card1.monsterType)
+            {
+                battle(card1, card2, card1.damage, zeroDamage);
+            }
+            else
+            {
+                battle(card1, card2, card1.damage, card2.damage);
             }
         }
 
         public void spellFight(ICard card1, ICard card2)
         {
-            int winningType = spellImmune(card1, card2);
-            if(winningType != 0)
+            if(card1.weakness == ICard.Monster_type.Spell)
             {
-                switch (winningType)
-                {
-                    case 1:
-                        battle(card1, card2, card1.damage, 0);
-                        break;
-                    case 2:
-                        battle(card1, card2, 0, card2.damage);
-                        break;
-                    default:
-                        break;
-                }
+                battle(card1, card2, zeroDamage, card2.damage);
+            }
+            else if(card2.weakness == ICard.Monster_type.Spell)
+            {
+                battle(card1, card2, card1.damage, zeroDamage);
             }
             else
             {
@@ -114,10 +111,10 @@ namespace Monster_Trading_Cards_Game
                         battle(card1, card2, card1.damage, card2.damage);
                         break;
                     case 1:
-                        battle(card1, card2, card1.damage * 2, card2.damage / 2);
+                        battle(card1, card2, card1.damage * damageMultiplier, card2.damage / damageDivisor);
                         break;
                     case 2:
-                        battle(card1, card2, card1.damage / 2, card2.damage * 2);
+                        battle(card1, card2, card1.damage / damageDivisor, card2.damage * damageMultiplier);
                         break;
                 }
             }
@@ -143,56 +140,6 @@ namespace Monster_Trading_Cards_Game
             }
         }
 
-        public int spellImmune(ICard card1, ICard card2)
-        {
-            int winningType = 0;
-            if (card1.monsterType == ICard.Monster_type.Knight && card2.elementType == ICard.Element_type.water && card2.monsterType == ICard.Monster_type.Spell)
-            {
-                winningType = 2;
-            }
-            else if (card1.monsterType == ICard.Monster_type.Spell && card1.elementType == ICard.Element_type.water && card2.monsterType == ICard.Monster_type.Knight)
-            {
-                winningType = 1;
-            }
-            else if (card1.monsterType == ICard.Monster_type.Kraken && card2.monsterType == ICard.Monster_type.Spell)
-            {
-                winningType = 1;
-            }
-            else if (card1.monsterType == ICard.Monster_type.Spell && card2.monsterType == ICard.Monster_type.Kraken)
-            {
-                winningType = 2;
-            }
-            return winningType;
-        }
-        public int monsterImmune(ICard card1, ICard card2)
-        {
-            int winningType = 0;
-            if (card1.monsterType == ICard.Monster_type.Goblin && card2.monsterType == ICard.Monster_type.Dragon)
-            {
-                winningType = 2;
-            }
-            else if (card1.monsterType == ICard.Monster_type.Dragon && card2.monsterType == ICard.Monster_type.Goblin)
-            {
-                winningType = 1;
-            }
-            else if (card1.monsterType == ICard.Monster_type.Wizzard && card2.monsterType == ICard.Monster_type.Ork)
-            {
-                winningType = 1;
-            }
-            else if (card1.monsterType == ICard.Monster_type.Ork && card2.monsterType == ICard.Monster_type.Wizzard)
-            {
-                winningType = 2;
-            }
-            else if (card1.monsterType == ICard.Monster_type.Elve && card1.elementType == ICard.Element_type.fire && card2.monsterType == ICard.Monster_type.Dragon)
-            {
-                winningType = 1;
-            }
-            else if (card1.monsterType == ICard.Monster_type.Dragon && card2.elementType == ICard.Element_type.fire && card2.monsterType == ICard.Monster_type.Elve)
-            {
-                winningType = 2;
-            }
-            return winningType;
-        }
         public int elementComparison(ICard card1, ICard card2)
         {
             int strongerElement = 0;
@@ -252,18 +199,18 @@ namespace Monster_Trading_Cards_Game
                 case 1:
                     fighter1.playedGames++;
                     fighter1.wonGames++;
-                    fighter1.elo += 3;
+                    fighter1.elo += winnerElo;
 
                     fighter2.playedGames++;
-                    fighter2.elo -= 5;
+                    fighter2.elo -= loserElo;
                     break;
                 case 2:
                     fighter2.playedGames++;
                     fighter2.wonGames++;
-                    fighter2.elo += 3;
+                    fighter2.elo += winnerElo;
 
                     fighter1.playedGames++;
-                    fighter1.elo -= 5;
+                    fighter1.elo -= loserElo;
                     break;
                 default:
                     break;

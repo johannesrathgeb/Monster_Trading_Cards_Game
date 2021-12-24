@@ -26,8 +26,10 @@ namespace Monster_Trading_Cards_Game
             Kraken,
             Elve,
             Ork,
-            Spell
+            Spell,
+            None
         }
         Monster_type monsterType { get; }
+        Monster_type weakness { get; }
     }
 }

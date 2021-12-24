@@ -11,7 +11,7 @@ namespace Monster_Trading_Cards_Game
         CardStack stack;
         public CardDeck deck = new CardDeck();
         private string _username, _password;
-        private int _elo, _playedGames, _wonGames;
+        private int _elo, _playedGames, _wonGames, _coins;
         public User(string username, string password, CardStack stack, CardDeck deck)
         {
             _username = username;
@@ -19,6 +19,7 @@ namespace Monster_Trading_Cards_Game
             this.stack = stack;
             this.deck = deck;
             _elo = 100;
+            _coins = 20;
         }
 
         public void setDeck()
