@@ -8,6 +8,7 @@ namespace Monster_Trading_Cards_Game
 {
     interface ICard
     {
+        int id { get; }
         string name { get; set; }
         double damage { get;}
         enum Element_type

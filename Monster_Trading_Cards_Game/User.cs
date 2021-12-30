@@ -29,7 +29,6 @@ namespace Monster_Trading_Cards_Game
             deck.clearDeck();
             Console.Clear();
             for (int i = 1; i<=4; i++){
-                
                 stack.printList();
                 Console.WriteLine("Choose Card " + i + " for your Deck");
                 input = Console.ReadLine();
@@ -61,7 +60,5 @@ namespace Monster_Trading_Cards_Game
         public int wonGames { get => _wonGames; set => _wonGames = value; }
         public string username { get => _username; set => _username = value; }
         public string password { get => _password; set => _password = value; }
-    }
-
-    
+    } 
 }

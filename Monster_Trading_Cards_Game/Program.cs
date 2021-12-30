@@ -1,4 +1,5 @@
 ﻿using Monster_Trading_Cards_Game.Database;
+using Monster_Trading_Cards_Game.Cards;
 using System;
 using System.Collections.Generic;
 
@@ -8,56 +9,45 @@ namespace Monster_Trading_Cards_Game
     {
         static void Main(string[] args)
         {
+            //Upload Cards to Database
+            //UploadCardsToDB cardUpload = new UploadCardsToDB();
+            //cardUpload.upload();
+
             //DB Test
             DB database = new DB();
             database.Connect();
-            //database.commandtest();
-            database.outputTest();
-            database.Disconnect();
+
+            CardDeck deck1 = new CardDeck();
+            deck1.addCard(database.getCardByID(1));
+            deck1.addCard(database.getCardByID(2));
+            deck1.addCard(database.getCardByID(3));
+            deck1.addCard(database.getCardByID(4));
+            deck1.addCard(database.getCardByID(5));
+
+            CardDeck deck2 = new CardDeck();
+            deck2.addCard(database.getCardByID(5));
+            deck2.addCard(database.getCardByID(6));
+            deck2.addCard(database.getCardByID(7));
+            deck2.addCard(database.getCardByID(8));
+            deck2.addCard(database.getCardByID(9));
 
             //TestStack
-            CardStack stack = new CardStack(new List<ICard>
-            {
-                //CardCreator
-                //Spells
-                new SpellCard("FireSpell", 10, ICard.Element_type.fire, ICard.Monster_type.Kraken),
-                new SpellCard("WaterSpell", 10, ICard.Element_type.water, ICard.Monster_type.Kraken),
-
-                //Monsters
-                new MonsterCard("FireDragon", 15, ICard.Element_type.fire, ICard.Monster_type.Dragon, ICard.Monster_type.Elve),
-                new MonsterCard("WaterGoblin", 10, ICard.Element_type.water, ICard.Monster_type.Goblin, ICard.Monster_type.Dragon),
-                new MonsterCard("FireElve", 5, ICard.Element_type.fire, ICard.Monster_type.Elve, ICard.Monster_type.None),
-                new MonsterCard("NormalKnight", 10, ICard.Element_type.normal, ICard.Monster_type.Knight, ICard.Monster_type.Spell),
-                new MonsterCard("FireWizzard", 10, ICard.Element_type.fire, ICard.Monster_type.Wizzard, ICard.Monster_type.None),
-                new MonsterCard("WaterKraken", 15, ICard.Element_type.water, ICard.Monster_type.Kraken, ICard.Monster_type.None),
-                new MonsterCard("NormalOrk", 5, ICard.Element_type.normal, ICard.Monster_type.Ork, ICard.Monster_type.Wizzard)
+            CardStack stack = new CardStack(new List<ICard>{
+            database.getCardByID(1),
+            database.getCardByID(2),
+            database.getCardByID(3),
+            database.getCardByID(4),
+            database.getCardByID(5),
+            database.getCardByID(6),
+            database.getCardByID(7),
+            database.getCardByID(8),
+            database.getCardByID(9)
             });
 
-            CardDeck deck1 = new CardDeck(new List<ICard>
-            {
-                new MonsterCard("FireDragon", 15, ICard.Element_type.fire, ICard.Monster_type.Dragon, ICard.Monster_type.Elve),
-                new MonsterCard("WaterGoblin", 10, ICard.Element_type.water, ICard.Monster_type.Goblin, ICard.Monster_type.Dragon),
-                new MonsterCard("FireElve", 10, ICard.Element_type.fire, ICard.Monster_type.Elve, ICard.Monster_type.None),
-                new MonsterCard("NormalKnight", 10, ICard.Element_type.normal, ICard.Monster_type.Knight, ICard.Monster_type.Spell)
-            });
-            CardDeck deck2 = new CardDeck(new List<ICard>
-            {
-                new MonsterCard("FireWizzard", 10, ICard.Element_type.fire, ICard.Monster_type.Wizzard, ICard.Monster_type.None),
-                new MonsterCard("WaterKraken", 5, ICard.Element_type.water, ICard.Monster_type.Kraken, ICard.Monster_type.None),
-                new MonsterCard("NormalOrk", 5, ICard.Element_type.normal, ICard.Monster_type.Ork, ICard.Monster_type.Wizzard),
-                new SpellCard("WaterSpell", 10, ICard.Element_type.water, ICard.Monster_type.Kraken)
+            database.Disconnect();
 
-            });
-            CardDeck spelldeck = new CardDeck(new List<ICard>
-            {
-                new SpellCard("FireSpell", 10, ICard.Element_type.fire, ICard.Monster_type.Kraken),
-                new SpellCard("WaterSpell", 10, ICard.Element_type.water, ICard.Monster_type.Kraken),
-                new SpellCard("FireSpell", 10, ICard.Element_type.fire, ICard.Monster_type.Kraken),
-                new SpellCard("WaterSpell", 10, ICard.Element_type.water, ICard.Monster_type.Kraken)
-
-            });
             User newUser1 = new User("TestUser", "PW123", stack, deck1);
-            User newUser2 = new User("Userer", "PW123", stack, spelldeck);
+            User newUser2 = new User("Userer", "PW123", stack, deck2);
 
             //Actual Program
             int input;
@@ -81,8 +71,6 @@ namespace Monster_Trading_Cards_Game
                         break;
                 }
             } while (input != 5);
-
-            
         }
     }
 }
