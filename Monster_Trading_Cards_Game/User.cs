@@ -12,14 +12,14 @@ namespace Monster_Trading_Cards_Game
         public CardDeck deck = new CardDeck();
         private string _username, _password;
         private int _elo, _playedGames, _wonGames, _coins;
-        public User(string username, string password, CardStack stack, CardDeck deck)
+        public User(string username, string password, CardStack stack, CardDeck deck, int elo, int coins)
         {
             _username = username;
             _password = password;
             this.stack = stack;
             this.deck = deck;
-            _elo = 100;
-            _coins = 20;
+            _elo = elo;
+            _coins = coins;
         }
 
         public void setDeck()

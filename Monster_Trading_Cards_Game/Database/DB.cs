@@ -27,16 +27,6 @@ namespace Monster_Trading_Cards_Game.Database
             connection.Close();
         }
 
-        public void commandtest()
-        {
-            using (var cmd = new NpgsqlCommand("INSERT INTO users (username, password) VALUES (@u, @p)", connection))
-            {
-                cmd.Parameters.AddWithValue("u", "testUser123");
-                cmd.Parameters.AddWithValue("p", "testPassword123");
-                cmd.ExecuteNonQuery();
-            }
-        }
-
         public void createCard(string name, double damage, ICard.Element_type elementType, ICard.Monster_type monsterType, ICard.Monster_type weakness)
         {
             using (var cmd = new NpgsqlCommand("INSERT INTO cards (name, damage, elementType, monsterType, weakness) VALUES (@n, @d, @e, @m, @w)", connection))
@@ -49,27 +39,31 @@ namespace Monster_Trading_Cards_Game.Database
                 cmd.ExecuteNonQuery();
             }
         }
-
-
-        public void outputTest()
-        {
-            using (var cmd = new NpgsqlCommand("SELECT * FROM users", connection))
-            {
-
-                NpgsqlDataReader reader = cmd.ExecuteReader();
-                while (reader.Read())
-                {
-                    for(int i = 0; i < reader.FieldCount; i++)
-                    {
-                        Console.Write(reader[i] + "  ");
-                    }
-                    Console.WriteLine();
-                    Console.WriteLine("------------------------------------------------------------------------");
-                }
-            }
-            System.Threading.Thread.Sleep(5000);
-        }
         
+        public string getUserPW(string username)
+        {
+            using (var cmd = new NpgsqlCommand("SELECT password FROM users WHERE username = '" + username + "'", connection))
+            {
+                NpgsqlDataReader reader = cmd.ExecuteReader();
+                reader.Read();
+                string password = (string)reader[0];
+                reader.Close();
+                return password;               
+            }
+        }
+
+        public User createUser(string username)
+        {
+            using (var cmd = new NpgsqlCommand("SELECT * FROM users WHERE username = '" + username + "'", connection))
+            {
+                NpgsqlDataReader reader = cmd.ExecuteReader();
+                reader.Read();
+                User newUser = new User(username, (string)reader[2], stack, deck, (int)reader[3], (int)reader[4]);
+                reader.Close();
+                return newUser;
+            }
+        }
+
         public ICard getCardByID(int id)
         {
             using (var cmd = new NpgsqlCommand("SELECT * FROM cards WHERE cid = " + id , connection))
@@ -91,6 +85,4 @@ namespace Monster_Trading_Cards_Game.Database
             }           
         }
     }
-
-    
 }

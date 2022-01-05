@@ -44,7 +44,7 @@ namespace Monster_Trading_Cards_Game
             database.getCardByID(9)
             });
 
-            database.Disconnect();
+            
 
             User newUser1 = new User("TestUser", "PW123", stack, deck1);
             User newUser2 = new User("Userer", "PW123", stack, deck2);
@@ -56,6 +56,7 @@ namespace Monster_Trading_Cards_Game
                 Console.Clear();
                 Console.WriteLine("1.) Edit Deck");
                 Console.WriteLine("2.) Fight");
+                Console.WriteLine("3.) Login");
                 Console.WriteLine("5.) Exit");
                 input = int.Parse(Console.ReadLine());
                 switch (input)
@@ -64,13 +65,26 @@ namespace Monster_Trading_Cards_Game
                         newUser1.setDeck();
                         break;
                     case 2:
-                        Battle battle = new Battle(newUser1, newUser2);
+                        Battle battle = new Battle(loggedInUser, newUser2);
                         battle.fight();
+                        break;
+                    case 3:
+                        Console.WriteLine("Enter Username");
+                        string username = Console.ReadLine();
+                        Console.WriteLine("Enter Password");
+                        string password = Console.ReadLine();
+                        if (database.getUserPW(username) == password)
+                        {
+                            //LOGIN SUCCESSFULL
+                            //CREATE USER;
+                            User loggedInUser = database.createUser(username);
+                        }
                         break;
                     default:
                         break;
                 }
             } while (input != 5);
+            database.Disconnect();
         }
     }
 }
