@@ -28,10 +28,13 @@ namespace Monster_Trading_Cards_Game
 
         public void fight()
         {
+            fighter1.updateBattleDeck();
+            fighter2.updateBattleDeck();
             do
             {
-                card1 = fighter1.deck.randomCard();
-                card2 = fighter2.deck.randomCard();
+                
+                card1 = fighter1.battleDeck.randomCard();
+                card2 = fighter2.battleDeck.randomCard();
 
                 Console.WriteLine();
                 Console.WriteLine("Next Round!");
@@ -50,13 +53,13 @@ namespace Monster_Trading_Cards_Game
                 }
 
                 //Endings
-                if(fighter1.deck.cardCount() <= 0)
+                if(fighter1.battleDeck.cardCount() <= 0)
                 {
                     winner = 2;
                     Console.WriteLine("Player 2 wins!");
                     break;
                 }
-                else if(fighter2.deck.cardCount() <= 0)
+                else if(fighter2.battleDeck.cardCount() <= 0)
                 {
                     winner = 1;
                     Console.WriteLine("Player 1 wins!");
@@ -125,14 +128,14 @@ namespace Monster_Trading_Cards_Game
             if (damage1 > damage2)
             {
                 Console.WriteLine("Fighter 1 wins with " + card1.name + "!");
-                fighter1.deck.addCard(card2);
-                fighter2.deck.removeCard(card2);
+                fighter1.battleDeck.addCardInBattle(card2);
+                fighter2.battleDeck.removeCard(card2);
             }
             else if (damage1 < damage2)
             {
                 Console.WriteLine("Fighter 2 wins " + card2.name + "!");
-                fighter2.deck.addCard(card1);
-                fighter1.deck.removeCard(card1);
+                fighter2.battleDeck.addCardInBattle(card1);
+                fighter1.battleDeck.removeCard(card1);
             }
             else
             {

@@ -26,12 +26,29 @@ namespace Monster_Trading_Cards_Game
             }
             return null;
         }
+
+        public bool isCardInStack(int id)
+        {
+            foreach (ICard card in cards)
+            {
+                if (card.id == id)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
         public void printList()
         {
             foreach (ICard card in cards)
             {
                 Console.WriteLine(card.name);
             }
+        }
+
+        public void addCardToStack(ICard card)
+        {
+            cards.Add(card);
         }
     }
 }
