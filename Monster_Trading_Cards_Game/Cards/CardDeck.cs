@@ -83,5 +83,10 @@ namespace Monster_Trading_Cards_Game
             database.Disconnect();
             cards.Clear();
         }
+
+        public void clearBattleDeck()
+        {
+            cards.Clear();
+        }
     }
 }

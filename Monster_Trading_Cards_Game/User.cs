@@ -13,13 +13,15 @@ namespace Monster_Trading_Cards_Game
         public CardDeck battleDeck = new CardDeck();
         private string _username, _password;
         private int _elo, _playedGames, _wonGames, _coins, _id;
-        public User(int id, string username, string password, int elo, int coins, CardStack stack, CardDeck deck)
+        public User(int id, string username, string password, int coins, int elo, int playedGames, int wonGames, CardStack stack, CardDeck deck)
         {
             _id = id;
             _username = username;
             _password = password;
             _elo = elo;
             _coins = coins;
+            _playedGames = playedGames;
+            _wonGames = wonGames;
             this.stack = stack;
             this.deck = deck;
         }
@@ -59,11 +61,26 @@ namespace Monster_Trading_Cards_Game
 
         public void updateBattleDeck()
         {
-            battleDeck = new CardDeck(deck.cards);
+            battleDeck.clearBattleDeck();
+            foreach(ICard card in deck.cards)
+            {
+                battleDeck.cards.Add(card);
+            }
+        }
+
+        public void printProfile()
+        {
+            Console.WriteLine("Name: " + username);
+            Console.WriteLine("Password: " + password);
+            Console.WriteLine("Coins: " + coins);
+            Console.WriteLine("Elo: " + elo);
+            Console.WriteLine("Games Played: " + playedGames);
+            Console.WriteLine("Games Won: " + wonGames);
         }
 
         public int id { get => _id; set => _id = value; }
         public int elo { get => _elo; set => _elo = value; }
+        public int coins { get => _coins; set => _coins = value; }
         public int playedGames { get => _playedGames; set => _playedGames = value; }
         public int wonGames { get => _wonGames; set => _wonGames = value; }
         public string username { get => _username; set => _username = value; }

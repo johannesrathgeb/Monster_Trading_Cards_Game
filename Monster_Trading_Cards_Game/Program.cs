@@ -45,33 +45,58 @@ namespace Monster_Trading_Cards_Game
             database.getCardByID(9)
             });
 
-            
-
-            User newUser1 = new User(0, "TestUser", "PW123", 20, 100, stack, deck1);
-            User newUser2 = new User(0, "Userer", "PW123", 20, 100, stack, deck2);
+            User newUser1 = new User(0, "TestUser", "PW123", 20, 100, 20, 100, stack, deck1);
+            User newUser2 = new User(0, "Userer", "PW123", 20, 100, 20, 100, stack, deck2);
 
             //Actual Program
-            int input;
+            int tempInput = 0;
+            int input = 0;
             User loggedInUser = null;
-            do
+            while(input != 1 && input != 2)
             {
-                Console.WriteLine("Enter Username");
-                string username = Console.ReadLine();
-                Console.WriteLine("Enter Password");
-                string password = Console.ReadLine();
-                if (database.getUserPW(username) == password)
+                Console.WriteLine("1.) Register as new User");
+                Console.WriteLine("2.) Login as existing User");
+                input = int.Parse(Console.ReadLine());
+            }
+            if(input == 1)
+            {
+                while (true)
                 {
-                    loggedInUser = database.loginUser(username);
+                    Console.WriteLine("Enter Username");
+                    string username = Console.ReadLine();
+                    if (!database.userExists(username))
+                    {
+                        Console.WriteLine("Enter Password");
+                        string password = Console.ReadLine();
+                        database.createUser(username, password);
+                        loggedInUser = database.loginUser(username);
+                        break;
+                    }
                 }
-            } while (loggedInUser == null);
-
+            }
+            else
+            {
+                do
+                {
+                    Console.WriteLine("Enter Username");
+                    string username = Console.ReadLine();
+                    Console.WriteLine("Enter Password");
+                    string password = Console.ReadLine();
+                    if (database.getUserPW(username) == password)
+                    {
+                        loggedInUser = database.loginUser(username);
+                    }
+                } while (loggedInUser == null);
+            }
             do
             {
                 Console.Clear();
                 Console.WriteLine("1.) Edit Deck");
                 Console.WriteLine("2.) Fight");
-                Console.WriteLine("3.) Add Card to Stack");
-                Console.WriteLine("5.) Exit");
+                Console.WriteLine("3.) Buy Pack");
+                Console.WriteLine("4.) Profile");
+                Console.WriteLine("5.) Scoreboard");
+                Console.WriteLine("6.) Exit");
                 input = int.Parse(Console.ReadLine());
                 switch (input)
                 {
@@ -83,6 +108,8 @@ namespace Monster_Trading_Cards_Game
                         {
                             Battle battle = new Battle(loggedInUser, newUser2);
                             battle.fight();
+
+                            database.updateUserStats(loggedInUser.id, loggedInUser.coins, loggedInUser.elo, loggedInUser.playedGames, loggedInUser.wonGames);
                         }
                         else
                         {
@@ -92,37 +119,78 @@ namespace Monster_Trading_Cards_Game
                         }
                         break;
                     case 3:
-                        //List all Cards
-                        List<ICard> cardList = database.getAllCards();
-                        foreach(ICard card in cardList)
+                        if(loggedInUser.coins < 5)
                         {
-                            Console.WriteLine(card.id + " " + card.name);
+                            Console.WriteLine("You don't have enough coins!");
                         }
-                        Console.WriteLine("Enter ID of Card you want to add to your Stack");
-                        
-                        //Choose
-                        int cardID = int.Parse(Console.ReadLine());
-                        ICard chosenCard = database.getCardByID(cardID);
-                        if (!loggedInUser.stack.isCardInStack(chosenCard.id))
+                        else
                         {
-                            //Add to Stack
-                            database.addCardToStack(chosenCard.id, loggedInUser.id);
-                            loggedInUser.stack.addCardToStack(chosenCard);
+                            Console.WriteLine("Do you want a Pack with 5 cards for 5 coins?");
+                            Console.WriteLine("1.) Yes");
+                            Console.WriteLine("2.) No");
+                            tempInput = int.Parse(Console.ReadLine());
+                            switch (tempInput)
+                            {
+                                case 1:
+                                    loggedInUser.coins -= 5;
+                                    database.updateUserStats(loggedInUser.id, loggedInUser.coins, loggedInUser.elo, loggedInUser.playedGames, loggedInUser.wonGames);
+                                    for (int i = 0; i <= 4; i++)
+                                    {
+                                        List<ICard> cardList = database.getAllCards();
+                                        var random = new Random();
+                                        int index = random.Next(cardList.Count);
+                                        database.addCardToStack(cardList[index].id, loggedInUser.id);
+                                        loggedInUser.stack.addCardToStack(cardList[index]);
+                                        Console.WriteLine("You got " + cardList[index].name + "!!!");
+                                        Console.Write("Press any Key to continue...");
+                                        Console.ReadLine();
+                                    }
+                                    break;
+                                default:
+                                    break;
+                            }
                         }
+                        break;
+                    case 4:
+                        loggedInUser.printProfile();
+                        Console.WriteLine();
+                        Console.WriteLine("Press 1 to change your password!");
+                        Console.WriteLine("Press any key to continue!");
+                        tempInput = int.Parse(Console.ReadLine());
+
+                        switch (tempInput)
+                        {
+                            case 1:
+                                Console.WriteLine("Enter password:");
+                                string password = Console.ReadLine();
+                                database.updatePassword(loggedInUser.id, password);
+                                loggedInUser.password = password;
+                                break;
+                            default:
+                                break;
+                        }
+                        break;
+                    case 5:
+                        database.printScoreboard();
+                        Console.Write("Press any Key to continue...");
+                        Console.ReadLine();
                         break;
                     default:
                         break;
                 }
-            } while (input != 5);
+            } while (input != 6);
             database.Disconnect();
         }
     }
 }
 //TODO
+//Deck Creator verbessern
+//Gegnersuche
+//Trading
+//DB Abfragen bearbeiten
+//Register und Login Nullabfragen
+//Token
 //Battle Logic alle ausnahmefälle einbinden
 //Unit Testing
-//Enums auslagern?
-//MagicNumbers
-//WriteLine mit $
 //evtl neue Karten erstellen
 //Class Diagram

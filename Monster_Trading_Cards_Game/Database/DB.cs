@@ -13,6 +13,8 @@ namespace Monster_Trading_Cards_Game.Database
     {
         const string ConnString = "Host=localhost;Username=postgres;Password=;Database=postgres";
         private NpgsqlConnection connection;
+        private NpgsqlCommand cmd;
+        private NpgsqlDataReader reader;
         //private NpgsqlBatchCommand testCommand;
 
         public NpgsqlConnection Connect()
@@ -50,6 +52,14 @@ namespace Monster_Trading_Cards_Game.Database
             }
         }
 
+        public void createUser(string username, string password)
+        {
+            cmd = new NpgsqlCommand("INSERT INTO users (username, password) VALUES (@u, @p)", connection);
+            cmd.Parameters.AddWithValue("u", username);
+            cmd.Parameters.AddWithValue("p", password);
+            cmd.ExecuteNonQuery();
+        }
+
         public void addCardToDeck(int cardID, int userID)
         {
             using (var cmd = new NpgsqlCommand("INSERT INTO decks (userID, cardID) VALUES (@u, @c)", connection))
@@ -59,15 +69,15 @@ namespace Monster_Trading_Cards_Game.Database
                 cmd.ExecuteNonQuery();
             }
         }
-
+//----------------------------------------------------------------------------------------------------------------------------
         public void removeCardFromDeck(int cardID, int userID)
         {
-            using (var cmd = new NpgsqlCommand("DELETE FROM decks WHERE userID = " + userID + " AND cardID = " + cardID, connection))
-            {
-                cmd.ExecuteNonQuery();
-            }
+            cmd = new NpgsqlCommand("DELETE FROM decks WHERE userID = @u AND cardID = @c;", connection);
+            cmd.Parameters.AddWithValue("u", userID);
+            cmd.Parameters.AddWithValue("c", cardID);
+            cmd.ExecuteNonQuery();
         }
-
+//---------------------------------------------------------------------------------------------------------------------------
         public string getUserPW(string username)
         {
             using (var cmd = new NpgsqlCommand("SELECT password FROM users WHERE username = '" + username + "'", connection))
@@ -76,8 +86,23 @@ namespace Monster_Trading_Cards_Game.Database
                 reader.Read();
                 string password = (string)reader[0];
                 reader.Close();
-                return password;               
+                return password;
             }
+        }
+
+        public bool userExists(string username)
+        {
+            bool exists = false;
+            cmd = new NpgsqlCommand("SELECT FROM users WHERE username = @u;", connection);
+            cmd.Parameters.AddWithValue("u", username);
+            reader = cmd.ExecuteReader();
+            reader.Read();
+            if (reader.HasRows)
+            {
+                exists = true;
+            }
+            reader.Close();
+            return exists;            
         }
 
         public User loginUser(string username)
@@ -92,9 +117,28 @@ namespace Monster_Trading_Cards_Game.Database
                 CardDeck deck = getDeckByID(userID);
                 NpgsqlDataReader reader1 = cmd.ExecuteReader();
                 reader1.Read();
-                User currentUser = new User(userID, username, (string)reader1[2], (int)reader1[3], (int)reader1[4], stack, deck);
+                User currentUser = new User(userID, username, (string)reader1[2], (int)reader1[3], (int)reader1[4], (int)reader1[5], (int)reader1[6], stack, deck);
                 reader1.Close();
                 return currentUser;
+            }
+        }
+
+        public void updatePassword(int id, string password)
+        {
+            cmd = new NpgsqlCommand("UPDATE users SET password = @p WHERE userid = @i;", connection);
+            cmd.Parameters.AddWithValue("i", id);
+            cmd.Parameters.AddWithValue("p", password);
+            cmd.ExecuteNonQuery();
+        }
+
+        public void printScoreboard()
+        {
+            Console.WriteLine("Name     Elo");
+            cmd = new NpgsqlCommand("SELECT username, elo FROM users ORDER BY elo DESC;", connection);
+            reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                Console.WriteLine(reader[0] + "     " + reader[1]);
             }
         }
 
@@ -189,6 +233,14 @@ namespace Monster_Trading_Cards_Game.Database
                 reader.Close();
             }
             return cardList;
+        }
+
+        public void updateUserStats(int id, int coins, int elo, int playedGames, int wonGames)
+        {
+            using (var cmd = new NpgsqlCommand("UPDATE users SET coins = " + coins + ", elo = " + elo + ", games_played = " + playedGames + ", games_won = " + wonGames + " WHERE userid = " + id, connection))
+            {
+                cmd.ExecuteNonQuery();
+            }
         }
     }
 }
