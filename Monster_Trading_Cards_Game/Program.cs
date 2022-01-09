@@ -46,8 +46,8 @@ namespace Monster_Trading_Cards_Game
 
             
 
-            User newUser1 = new User("TestUser", "PW123", stack, deck1);
-            User newUser2 = new User("Userer", "PW123", stack, deck2);
+            User newUser1 = new User("TestUser", "PW123", 20, 100);
+            User newUser2 = new User("Userer", "PW123", 20, 100);
 
             //Actual Program
             int input;
@@ -65,8 +65,8 @@ namespace Monster_Trading_Cards_Game
                         newUser1.setDeck();
                         break;
                     case 2:
-                        Battle battle = new Battle(loggedInUser, newUser2);
-                        battle.fight();
+                        //Battle battle = new Battle(loggedInUser, newUser2);
+                        //battle.fight();
                         break;
                     case 3:
                         Console.WriteLine("Enter Username");
@@ -77,7 +77,7 @@ namespace Monster_Trading_Cards_Game
                         {
                             //LOGIN SUCCESSFULL
                             //CREATE USER;
-                            User loggedInUser = database.createUser(username);
+                            User loggedInUser = database.loginUser(username);
                         }
                         break;
                     default:

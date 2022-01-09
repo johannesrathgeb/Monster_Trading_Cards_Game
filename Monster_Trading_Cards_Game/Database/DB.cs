@@ -52,15 +52,44 @@ namespace Monster_Trading_Cards_Game.Database
             }
         }
 
-        public User createUser(string username)
+        public User loginUser(string username)
         {
             using (var cmd = new NpgsqlCommand("SELECT * FROM users WHERE username = '" + username + "'", connection))
             {
                 NpgsqlDataReader reader = cmd.ExecuteReader();
                 reader.Read();
-                User newUser = new User(username, (string)reader[2], stack, deck, (int)reader[3], (int)reader[4]);
+                int userID = (int)reader[0];
                 reader.Close();
-                return newUser;
+                CardStack stack = getStackByID(userID);
+                NpgsqlDataReader reader1 = cmd.ExecuteReader();
+                reader1.Read();
+                User currentUser = new User(username, (string)reader1[2], (int)reader1[3], (int)reader1[4]);
+                reader1.Close();
+                return currentUser;
+            }
+        }
+
+        public CardStack getStackByID(int userID)
+        {
+            using (var cmd = new NpgsqlCommand("SELECT cardID FROM stacks WHERE userID = " + userID, connection))
+            {
+                List<int> cardIDs = new List<int>();
+                List<ICard> cardList = new List<ICard>();
+                NpgsqlDataReader reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    for(int i = 0; i < reader.FieldCount; i++)
+                    {
+                        cardIDs.Add((int)reader[i]);   
+                    }
+                }
+                reader.Close();
+                foreach(int id in cardIDs)
+                {
+                    cardList.Add(getCardByID(id));
+                }
+                CardStack stack = new CardStack(cardList);
+                return stack;
             }
         }
 
