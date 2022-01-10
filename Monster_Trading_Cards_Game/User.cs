@@ -12,7 +12,7 @@ namespace Monster_Trading_Cards_Game
         public CardStack stack;
         public CardDeck deck = new CardDeck();
         public CardDeck battleDeck = new CardDeck();
-        private string _username, _password;
+        private string _username, _password, _token;
         private int _elo, _playedGames, _wonGames, _coins, _id;
         public User(int id, string username, string password, int coins, int elo, int playedGames, int wonGames, CardStack stack, CardDeck deck)
         {
@@ -94,5 +94,6 @@ namespace Monster_Trading_Cards_Game
         public int wonGames { get => _wonGames; set => _wonGames = value; }
         public string username { get => _username; set => _username = value; }
         public string password { get => _password; set => _password = value; }
+        public string token { get => _token; set => _token = value; }
     } 
 }

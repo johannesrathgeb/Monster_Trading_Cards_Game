@@ -4,11 +4,21 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Drawing;
+using System.Linq;
 
 namespace Monster_Trading_Cards_Game
 {
     class Program
     {
+        private static Random random = new Random();
+        public static string RandomString(int length)
+        {
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            return new string(Enumerable.Repeat(chars, length)
+                .Select(s => s[random.Next(s.Length)]).ToArray());
+        }
+
+
         static void Main(string[] args)
         {
             //Upload Cards to Database
@@ -93,6 +103,9 @@ namespace Monster_Trading_Cards_Game
                         if (database.getUserPW(username) == password)
                         {
                             loggedInUser = database.loginUser(username);
+                            string token = (RandomString(16));
+                            database.setToken(token, loggedInUser.id);
+                            loggedInUser.token = token;
                         }
                         else
                         {
@@ -125,6 +138,14 @@ namespace Monster_Trading_Cards_Game
                     Console.WriteLine("[ ] Exit");
                     input = navigation.moveCursor(10, Console.CursorTop);
                 }
+                if(loggedInUser.token != database.getToken(loggedInUser.id))
+                {
+                    Console.Clear();
+                    Console.WriteLine("You are not logged in anymore!");
+                    Console.Write("Press any Key to continue...");
+                    Console.ReadLine();
+                    return;
+                }
                 switch (input)
                 {
                     case 1:
@@ -133,10 +154,11 @@ namespace Monster_Trading_Cards_Game
                     case 2:
                         if(loggedInUser.deck.cardCount() >= 4)
                         {
-                            Battle battle = new Battle(loggedInUser, newUser2);
+                            User enemyUser = database.getEnemyUser(loggedInUser.id);
+                            Battle battle = new Battle(loggedInUser, enemyUser);
                             battle.fight();
-
                             database.updateUserStats(loggedInUser.id, loggedInUser.coins, loggedInUser.elo, loggedInUser.playedGames, loggedInUser.wonGames);
+                            database.updateUserStats(enemyUser.id, enemyUser.coins, enemyUser.elo, enemyUser.playedGames, enemyUser.wonGames);
                         }
                         else
                         {
@@ -468,15 +490,4 @@ namespace Monster_Trading_Cards_Game
     }
 }
 //TODO
-//Token3
-//Gegnersuche
-
-//Deck erstellen Console
-//Battle Farben
-
-//Register und Login Nullabfragen
-
-//Battle Logic alle ausnahmefälle einbinden
-//evtl neue Karten erstellen
 //Class Diagram
-//DB Singleton

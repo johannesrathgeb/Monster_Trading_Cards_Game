@@ -415,5 +415,43 @@ namespace Monster_Trading_Cards_Game.Database
             cmd.Parameters.AddWithValue("i", id);
             cmd.ExecuteNonQuery(); 
         }
+
+        public void setToken(string token, int userID)
+        {
+            cmd = new NpgsqlCommand("UPDATE users SET token = @t WHERE userid = @i", connection);
+            cmd.Parameters.AddWithValue("t", token);
+            cmd.Parameters.AddWithValue("i", userID);
+            cmd.ExecuteNonQuery();
+        }
+
+        public string getToken(int userID)
+        {
+            cmd = new NpgsqlCommand("SELECT token FROM users WHERE userid = @i", connection);
+            cmd.Parameters.AddWithValue("i", userID);
+            reader = cmd.ExecuteReader();
+            reader.Read();
+            string token = (string)reader[0];
+            reader.Close();
+            return token;
+        }
+
+        public User getEnemyUser(int userID)
+        {
+            cmd = new NpgsqlCommand("SELECT userid FROM decks WHERE NOT userid = @i GROUP BY userid HAVING COUNT(userid) = 4 ORDER BY RANDOM(); ", connection);
+            cmd.Parameters.AddWithValue("i", userID);
+            reader = cmd.ExecuteReader();
+            reader.Read();
+            int id = (int)reader[0];
+            reader.Close();
+            CardStack stack = getStackByID(id);
+            CardDeck deck = getDeckByID(id);
+            cmd = new NpgsqlCommand("SELECT * FROM users WHERE userid = @i", connection);
+            cmd.Parameters.AddWithValue("i", id);
+            NpgsqlDataReader reader1 = cmd.ExecuteReader();
+            reader1.Read();
+            User enemyUser = new User(id, (string)reader1[1], (string)reader1[2], (int)reader1[3], (int)reader1[4], (int)reader1[5], (int)reader1[6], stack, deck);
+            reader1.Close();
+            return enemyUser;
+        }
     }
 }
