@@ -8,6 +8,7 @@ namespace Monster_Trading_Cards_Game
 {
     public class User
     {
+        ConsoleNavigation navigation = new ConsoleNavigation();
         public CardStack stack;
         public CardDeck deck = new CardDeck();
         public CardDeck battleDeck = new CardDeck();
@@ -28,20 +29,27 @@ namespace Monster_Trading_Cards_Game
 
         public void setDeck()
         {
-            string input;
+            int input = -1;
             ICard foundCard;
             deck.clearDeck(id);
             Console.Clear();
             for (int i = 1; i<=4; i++){
-                stack.printList();
-                Console.WriteLine("Choose Card " + i + " for your Deck");
-                input = Console.ReadLine();
-                foundCard = stack.searchCard(input);
+                input = -1;
+                while(input == -1)
+                {
+                    Console.Clear();
+                    Console.WriteLine("Choose Card " + i + " for your Deck:");
+                    stack.printList();
+                    input = navigation.moveCursor(stack.cards.Count(), Console.CursorTop);
+                }
+
+                foundCard = stack.searchCard(stack.cards[input-1]);
                 if (foundCard == null)
                 {
                     Console.Clear();
                     Console.WriteLine("Could'nt find card. Try again!");
-                    Console.WriteLine();
+                    Console.Write("Press any Key to continue...");
+                    Console.ReadKey();
                     i--;
                 }
                 else
@@ -50,7 +58,8 @@ namespace Monster_Trading_Cards_Game
                     if (deck.addCard(foundCard, id) == false)
                     {
                         Console.WriteLine("Card is already in deck!");
-                        Console.WriteLine();
+                        Console.Write("Press any Key to continue...");
+                        Console.ReadKey();
                         i--;
                     }
                 }

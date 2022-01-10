@@ -53,8 +53,10 @@ namespace Monster_Trading_Cards_Game
         {
             foreach(ICard card in cards)
             {
-                Console.WriteLine(card.name);
+                Console.WriteLine(card.name + " Damage: " + card.damage);
             }
+            Console.Write("Press any Key to continue...");
+            Console.ReadKey();
         }
 
         public ICard randomCard()

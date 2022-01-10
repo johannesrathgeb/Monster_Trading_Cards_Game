@@ -3,6 +3,7 @@ using Monster_Trading_Cards_Game.Cards;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Drawing;
 
 namespace Monster_Trading_Cards_Game
 {
@@ -50,15 +51,20 @@ namespace Monster_Trading_Cards_Game
 
             //Actual Program
             int tempInput = 0;
-            int input = 0;
+            int input = -1;
+            ConsoleNavigation navigation = new ConsoleNavigation();
             User loggedInUser = null;
-            while(input != 1 && input != 2)
+            while(input == -1)
             {
-                Console.WriteLine("1.) Register as new User");
-                Console.WriteLine("2.) Login as existing User");
-                input = int.Parse(Console.ReadLine());
+                Console.Clear();
+                Console.CursorVisible = false;
+                Console.WriteLine("[ ] Register");
+                Console.WriteLine("[ ] Login as existing User");
+                input = navigation.moveCursor(2, Console.CursorTop);
             }
-            if(input == 1)
+            Console.Clear();
+            Console.CursorVisible = true;
+            if (input == 1)
             {
                 while (true)
                 {
@@ -82,25 +88,42 @@ namespace Monster_Trading_Cards_Game
                     string username = Console.ReadLine();
                     Console.WriteLine("Enter Password");
                     string password = Console.ReadLine();
-                    if (database.getUserPW(username) == password)
+                    if (database.userExists(username))
                     {
-                        loggedInUser = database.loginUser(username);
+                        if (database.getUserPW(username) == password)
+                        {
+                            loggedInUser = database.loginUser(username);
+                        }
+                        else
+                        {
+                            Console.WriteLine("Wrong Password!");
+                        }
                     }
+                    else
+                    {
+                        Console.WriteLine("User doesn't exist!");
+                    }
+
                 } while (loggedInUser == null);
             }
             do
             {
-                Console.Clear();
-                Console.WriteLine("1.) Edit Deck");
-                Console.WriteLine("2.) Fight");
-                Console.WriteLine("3.) Buy Pack");
-                Console.WriteLine("4.) Profile");
-                Console.WriteLine("5.) Scoreboard");
-                Console.WriteLine("6.) Trade Card");
-                Console.WriteLine("7.) Edit active Trades");
-                Console.WriteLine("8.) Watch Trade Offers");
-                Console.WriteLine("9.) Exit");
-                input = int.Parse(Console.ReadLine());
+                Console.CursorVisible = false;
+                input = -1;
+                while(input == -1)
+                {
+                    Console.Clear();
+                    Console.WriteLine("[ ] Edit Deck");
+                    Console.WriteLine("[ ] Fight");
+                    Console.WriteLine("[ ] Buy Pack");
+                    Console.WriteLine("[ ] Profile");
+                    Console.WriteLine("[ ] Scoreboard");
+                    Console.WriteLine("[ ] Trade Card");
+                    Console.WriteLine("[ ] Edit active Trades");
+                    Console.WriteLine("[ ] Watch Trade Offers");
+                    Console.WriteLine("[ ] Exit");
+                    input = navigation.moveCursor(9, Console.CursorTop);
+                }
                 switch (input)
                 {
                     case 1:
@@ -124,14 +147,21 @@ namespace Monster_Trading_Cards_Game
                     case 3:
                         if(loggedInUser.coins < 5)
                         {
-                            Console.WriteLine("You don't have enough coins!");
+                            Console.WriteLine("You need 5 coins to buy a Pack!");
+                            Console.WriteLine("You currently have " + loggedInUser.coins + " coins!");
                         }
                         else
                         {
-                            Console.WriteLine("Do you want a Pack with 5 cards for 5 coins?");
-                            Console.WriteLine("1.) Yes");
-                            Console.WriteLine("2.) No");
-                            tempInput = int.Parse(Console.ReadLine());
+                            tempInput = -1;
+                            while(tempInput == -1)
+                            {
+                                Console.Clear();
+                                Console.WriteLine("Do you want a Pack with 5 cards for 5 coins?");
+                                Console.WriteLine("[ ] Yes");
+                                Console.WriteLine("[ ] No");
+                                tempInput = navigation.moveCursor(2, Console.CursorTop);
+                            }
+                            
                             switch (tempInput)
                             {
                                 case 1:
@@ -139,12 +169,13 @@ namespace Monster_Trading_Cards_Game
                                     database.updateUserStats(loggedInUser.id, loggedInUser.coins, loggedInUser.elo, loggedInUser.playedGames, loggedInUser.wonGames);
                                     for (int i = 0; i <= 4; i++)
                                     {
+                                        Console.Clear();
                                         List<ICard> cardList = database.getAllCards();
                                         var random = new Random();
                                         int index = random.Next(cardList.Count);
                                         database.addCardToStack(cardList[index].id, loggedInUser.id);
                                         loggedInUser.stack.addCardToStack(cardList[index]);
-                                        Console.WriteLine("You got " + cardList[index].name + "!!!");
+                                        Console.WriteLine("You got " + cardList[index].name + " Damage: " + cardList[index].damage + "!!!");
                                         Console.Write("Press any Key to continue...");
                                         Console.ReadLine();
                                     }
@@ -155,15 +186,20 @@ namespace Monster_Trading_Cards_Game
                         }
                         break;
                     case 4:
-                        loggedInUser.printProfile();
-                        Console.WriteLine();
-                        Console.WriteLine("Press 1 to change your password!");
-                        Console.WriteLine("Press any key to continue!");
-                        tempInput = int.Parse(Console.ReadLine());
-
+                        tempInput = -1;
+                        while (tempInput == -1)
+                        {
+                            Console.Clear();
+                            loggedInUser.printProfile();
+                            Console.WriteLine("[ ] Return to menu");
+                            Console.WriteLine("[ ] Change password");
+                            tempInput = navigation.moveCursor(2, Console.CursorTop);
+                        }
+                        Console.Clear();
                         switch (tempInput)
                         {
-                            case 1:
+                            case 2:
+                                Console.CursorVisible = true;
                                 Console.WriteLine("Enter password:");
                                 string password = Console.ReadLine();
                                 database.updatePassword(loggedInUser.id, password);
@@ -181,14 +217,32 @@ namespace Monster_Trading_Cards_Game
                     case 6:
                         while (true)
                         {
-                            loggedInUser.stack.printList();
-                            tempInput = int.Parse(Console.ReadLine());
+                            tempInput = -1;
+                            while (tempInput == -1)
+                            {
+                                Console.Clear();
+                                Console.WriteLine("Choose Card to trade");
+                                loggedInUser.stack.printList();
+                                tempInput = navigation.moveCursor(loggedInUser.stack.cards.Count, Console.CursorTop);
+                            }
+                            Console.Clear();
                             if (!loggedInUser.deck.cards.Contains(loggedInUser.stack.cards[tempInput-1]))
                             {
                                 Console.WriteLine("Whats your minimun damage requirement to trade?");
+                                Console.CursorVisible = true;
                                 int wantedDamage = int.Parse(Console.ReadLine());
-                                Console.WriteLine("Press 1 to search for Spells, press any other key to search for Monsters");
-                                int wantedType = int.Parse(Console.ReadLine());
+                                Console.CursorVisible = false;
+                                Console.Clear();
+
+                                int wantedType = -1;
+                                while (wantedType == -1)
+                                {
+                                    Console.Clear();
+                                    Console.WriteLine("What card type do you want to trade for?");
+                                    Console.WriteLine("[ ] Spell");
+                                    Console.WriteLine("[ ] Monster");
+                                    wantedType = navigation.moveCursor(2, Console.CursorTop);
+                                }
                                 if(wantedType != 1)
                                 {
                                     wantedType = 0;
@@ -200,13 +254,29 @@ namespace Monster_Trading_Cards_Game
                         }
                         break;
                     case 7:
-                        List<int> cardIDs = database.printActiveTrades(loggedInUser.id);
-                        Console.WriteLine("Press 1 to cancel a trade offer");
-                        tempInput = int.Parse(Console.ReadLine());
-                        if (tempInput == 1)
+                        List<int> cardIDs = database.activeTradesCardIDs(loggedInUser.id);
+                        string printList = database.activeTradesPrint(loggedInUser.id);
+                        string chooseList = database.activeTradesChoose(loggedInUser.id);
+                        tempInput = -1;
+                        while (tempInput == -1)
                         {
-                            Console.WriteLine("Select Trade to cancel by Card ID");
-                            int cardID = int.Parse(Console.ReadLine());
+                            Console.Clear();
+                            Console.Write(printList);
+                            Console.WriteLine("[ ] Return to menu");
+                            Console.WriteLine("[ ] Cancel trade offer");
+                            tempInput = navigation.moveCursor(2, Console.CursorTop);
+                        }
+                        Console.Clear();
+                        if (tempInput == 2)
+                        {
+                            tempInput = -1;
+                            while (tempInput == -1)
+                            {
+                                Console.Clear();
+                                Console.Write(chooseList);
+                                tempInput = navigation.moveCursor(cardIDs.Count, Console.CursorTop);
+                            }
+                            int cardID = cardIDs[tempInput-1];
                             if (cardIDs.Contains(cardID)){
                                 database.cancelTrade(cardID, loggedInUser.id);
                                 loggedInUser.stack.addCardToStack(database.getCardByID(cardID));
@@ -220,21 +290,56 @@ namespace Monster_Trading_Cards_Game
                         }
                         break;
                     case 8:
-                        List<int> tradeIDs = database.printAllTrades(loggedInUser.id);
-
-                        Console.WriteLine("Select Trade to accept by Card ID");
-                        int tradeID = int.Parse(Console.ReadLine());
-                        if (tradeIDs.Contains(tradeID))
+                        List<int> tradeIDs = database.allTradeIDs(loggedInUser.id);
+                        if(tradeIDs.Count <= 0)
+                        {
+                            break;
+                        }
+                        string print = database.printAllTrades(loggedInUser.id);
+                        tempInput = -1;
+                        while (tempInput == -1)
                         {
                             Console.Clear();
-                            loggedInUser.stack.printList();
-                            Console.WriteLine("What Card do you want to trade?");
-                            tempInput = int.Parse(Console.ReadLine());
+                            Console.Write(print);
+                            tempInput = navigation.moveCursor(tradeIDs.Count, Console.CursorTop);
+                        }
+                        Console.Clear();
+                        int tradeID = tradeIDs[tempInput - 1];
+                        if (tradeIDs.Contains(tradeID))
+                        {
+                            tempInput = -1;
+                            while (tempInput == -1)
+                            {
+                                Console.Clear();
+                                Console.WriteLine("What card do you want to trade?");
+                                loggedInUser.stack.printList();
+                                tempInput = navigation.moveCursor(loggedInUser.stack.cards.Count, Console.CursorTop);
+                            }
+                            Console.Clear();
                             if (!loggedInUser.deck.cards.Contains(loggedInUser.stack.cards[tempInput-1]))
                             {
-                                int[] ids = database.acceptTradeOffer(tradeID, loggedInUser.id);
-                                loggedInUser.stack.addCardToStack(database.getCardByID(ids[0]));
-                                database.returnCardForTrade(ids[1], tempInput, loggedInUser.id);
+                                //trade -> wants spell?
+                                int[] wanteds = database.tradeWanteds(tradeID);
+                                if(loggedInUser.stack.cards[tempInput - 1].damage <= wanteds[0])
+                                {
+                                    Console.WriteLine("Card hasn't enough damage!");
+                                    Console.Write("Press any Key to continue...");
+                                    Console.ReadLine();
+                                    break;
+                                }
+                                else if((loggedInUser.stack.cards[tempInput - 1].monsterType == ICard.Monster_type.Spell && wanteds[1] != 1) || (loggedInUser.stack.cards[tempInput - 1].monsterType != ICard.Monster_type.Spell && wanteds[1] == 1))
+                                {
+                                    Console.WriteLine("Card hasn't the wanted Type!");
+                                    Console.Write("Press any Key to continue...");
+                                    Console.ReadLine();
+                                    break;
+                                }
+                                else
+                                {
+                                    int[] ids = database.acceptTradeOffer(tradeID, loggedInUser.id);
+                                    loggedInUser.stack.addCardToStack(database.getCardByID(ids[0]));
+                                    database.returnCardForTrade(ids[1], tempInput, loggedInUser.id);
+                                }
                             }
                             else
                             {
@@ -259,11 +364,18 @@ namespace Monster_Trading_Cards_Game
     }
 }
 //TODO
-
-//Deck Creator verbessern
-//Gegnersuche
-//Register und Login Nullabfragen
 //Token
+//Unique feature
+//Gegnersuche
+
+//Deck erstellen Console
+//Battle Farben
+
+//Trading damage werte usw anzeigen
+//Deck Creator verbessern
+
+//Register und Login Nullabfragen
+
 //Battle Logic alle ausnahmefälle einbinden
 //evtl neue Karten erstellen
 //Class Diagram

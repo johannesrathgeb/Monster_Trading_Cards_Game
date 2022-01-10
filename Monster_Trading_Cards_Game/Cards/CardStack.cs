@@ -15,11 +15,11 @@ namespace Monster_Trading_Cards_Game
             this.cards = cardList;
         }
 
-        public ICard searchCard(string input)
+        public ICard searchCard(ICard inputCard)
         {
             foreach(ICard card in cards)
             {
-                if(card.name == input)
+                if(card == inputCard)
                 {
                     return card;
                 }
@@ -40,11 +40,9 @@ namespace Monster_Trading_Cards_Game
         }
         public void printList()
         {
-            int i = 1;
             foreach (ICard card in cards)
             {                
-                Console.WriteLine(i + ".) " + card.name);
-                i++;
+                Console.WriteLine("[ ] " + card.name + " Damage: " + card.damage);
             }
         }
 

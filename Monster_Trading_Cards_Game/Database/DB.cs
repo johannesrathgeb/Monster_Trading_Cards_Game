@@ -82,39 +82,91 @@ namespace Monster_Trading_Cards_Game.Database
             cmd.ExecuteNonQuery();
         }
 
-        public List<int> printActiveTrades(int userID)
+        public List<int> activeTradesCardIDs(int userID)
         {
             List<int> cardIDs = new List<int>();
             cmd = new NpgsqlCommand("SELECT cardID, wantedDamage, wantedType, name, damage FROM trades JOIN cards ON trades.cardID = cards.cid WHERE ownerID = @o;", connection);
             cmd.Parameters.AddWithValue("o", userID);
             reader = cmd.ExecuteReader();
-            reader.Read();
-            if (reader.HasRows)
+            while (reader.Read())
             {
-                cardIDs.Add((int)reader[0]);
-                Console.WriteLine(reader[0] + ".) " + reader[3] + " with Damage: " + reader[4] + " wanted Damage: " + reader[1] + " wanted Type: " + reader[2]);
+                if (reader.HasRows)
+                {
+                    cardIDs.Add((int)reader[0]);
+                }
             }
             reader.Close();
             return cardIDs;
         }
 
-        public List<int> printAllTrades(int userID)
+        public string activeTradesPrint(int userID)
+        {
+            string print = null;
+            cmd = new NpgsqlCommand("SELECT cardID, wantedDamage, wantedType, name, damage FROM trades JOIN cards ON trades.cardID = cards.cid WHERE ownerID = @o;", connection);
+            cmd.Parameters.AddWithValue("o", userID);
+            reader = cmd.ExecuteReader();
+            while (reader.Read()){
+                if (reader.HasRows)
+                {
+                    print += (reader[3] + " with Damage: " + reader[4] + " wanted Damage: " + reader[1] + " wanted Type: " + reader[2] + '\n');
+                }
+            }
+            reader.Close();
+            return print;
+        }
+
+        public string activeTradesChoose(int userID)
+        {
+            string print = null;
+            cmd = new NpgsqlCommand("SELECT cardID, wantedDamage, wantedType, name, damage FROM trades JOIN cards ON trades.cardID = cards.cid WHERE ownerID = @o;", connection);
+            cmd.Parameters.AddWithValue("o", userID);
+            reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                if (reader.HasRows)
+                {
+                    print += ("[ ]" + reader[3] + " with Damage: " + reader[4] + " wanted Damage: " + reader[1] + " wanted Type: " + reader[2] + '\n');
+                }
+            }
+            reader.Close();
+            return print;
+        }
+
+        public string printAllTrades(int userID)
+        {
+            string print = null;
+            cmd = new NpgsqlCommand("SELECT id, wantedDamage, wantedType, name, damage, username FROM ((trades JOIN cards ON trades.cardID = cards.cid) JOIN users ON trades.ownerID = users.userid) WHERE ownerID != @o;", connection);
+            cmd.Parameters.AddWithValue("o", userID);
+            reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                if (reader.HasRows)
+                {
+                    if ((int)reader[2] == 1)
+                    {
+                        print += ("[ ] " + reader[5] + " trades " + reader[3] + " with " + reader[4] + " damage for Spell with minimum " + reader[1] + " damage!" + '\n');
+                    }
+                    else
+                    {
+                        print += ("[ ] " + reader[5] + " trades " + reader[3] + " with " + reader[4] + " damage for Monster with minimum " + reader[1] + " damage!" + '\n');
+                    }
+                }
+            }
+            reader.Close();
+            return print;
+        }
+
+        public List<int> allTradeIDs(int userID)
         {
             List<int> tradeIDs = new List<int>();
             cmd = new NpgsqlCommand("SELECT id, wantedDamage, wantedType, name, damage, username FROM ((trades JOIN cards ON trades.cardID = cards.cid) JOIN users ON trades.ownerID = users.userid) WHERE ownerID != @o;", connection);
             cmd.Parameters.AddWithValue("o", userID);
             reader = cmd.ExecuteReader();
-            reader.Read();
-            if (reader.HasRows)
+            while (reader.Read())
             {
-                tradeIDs.Add((int)reader[0]);
-                if((int)reader[2] == 1)
+                if (reader.HasRows)
                 {
-                    Console.WriteLine(reader[0] + ".) " + reader[5] + " trades " + reader[3] + " with " + reader[4] + " damage for Spell with minimum " + reader[1] + " damage!");
-                }
-                else
-                {
-                    Console.WriteLine(reader[0] + ".) " + reader[5] + " trades " + reader[3] + " with " + reader[4] + " damage for Monster with minimum " + reader[1] + " damage!");
+                    tradeIDs.Add((int)reader[0]);
                 }
             }
             reader.Close();
@@ -214,6 +266,8 @@ namespace Monster_Trading_Cards_Game.Database
             reader.Close();
             CardStack stack = getStackByID(userID);
             CardDeck deck = getDeckByID(userID);
+            cmd = new NpgsqlCommand("SELECT * FROM users WHERE username = @u", connection);
+            cmd.Parameters.AddWithValue("u", username);
             NpgsqlDataReader reader1 = cmd.ExecuteReader();
             reader1.Read();
             User currentUser = new User(userID, username, (string)reader1[2], (int)reader1[3], (int)reader1[4], (int)reader1[5], (int)reader1[6], stack, deck);
@@ -261,6 +315,19 @@ namespace Monster_Trading_Cards_Game.Database
             }
             CardStack stack = new CardStack(cardList);
             return stack;
+        }
+
+        public int[] tradeWanteds(int tradeID)
+        {
+            cmd = new NpgsqlCommand("SELECT wantedDamage, wantedType FROM trades WHERE id = @i", connection);
+            cmd.Parameters.AddWithValue("i", tradeID);
+            reader = cmd.ExecuteReader();
+            reader.Read();
+            int[] wanteds = new int[2];
+            wanteds[0] = (int)reader[0];
+            wanteds[1] = (int)reader[1];
+            reader.Close();
+            return wanteds;
         }
 
         public CardDeck getDeckByID(int userID)
