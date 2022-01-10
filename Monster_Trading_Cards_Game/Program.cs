@@ -116,13 +116,14 @@ namespace Monster_Trading_Cards_Game
                     Console.WriteLine("[ ] Edit Deck");
                     Console.WriteLine("[ ] Fight");
                     Console.WriteLine("[ ] Buy Pack");
+                    Console.WriteLine("[ ] Create own Card");
                     Console.WriteLine("[ ] Profile");
                     Console.WriteLine("[ ] Scoreboard");
                     Console.WriteLine("[ ] Trade Card");
                     Console.WriteLine("[ ] Edit active Trades");
                     Console.WriteLine("[ ] Watch Trade Offers");
                     Console.WriteLine("[ ] Exit");
-                    input = navigation.moveCursor(9, Console.CursorTop);
+                    input = navigation.moveCursor(10, Console.CursorTop);
                 }
                 switch (input)
                 {
@@ -186,6 +187,109 @@ namespace Monster_Trading_Cards_Game
                         }
                         break;
                     case 4:
+                        if (loggedInUser.coins < 10)
+                        {
+                            Console.Clear();
+                            Console.WriteLine("You need 10 coins to create a Card!");
+                            Console.WriteLine("You currently have " + loggedInUser.coins + " coins!");
+                            Console.Write("Press any Key to continue...");
+                            Console.ReadLine();
+                        }
+                        else
+                        {
+                            tempInput = -1;
+                            while (tempInput == -1)
+                            {
+                                Console.Clear();
+                                Console.WriteLine("Do you want to create a Card for 10 coins?");
+                                Console.WriteLine("[ ] Yes");
+                                Console.WriteLine("[ ] No");
+                                tempInput = navigation.moveCursor(2, Console.CursorTop);
+                            }
+
+                            switch (tempInput)
+                            {
+                                case 1:
+                                    loggedInUser.coins -= 10;
+                                    database.updateUserStats(loggedInUser.id, loggedInUser.coins, loggedInUser.elo, loggedInUser.playedGames, loggedInUser.wonGames);
+                                    Console.Clear();
+                                    Console.CursorVisible = true;
+                                    Console.WriteLine("What should your card be called?");
+                                    string cardname = Console.ReadLine();
+                                    int carddamage = -1;
+                                    while (carddamage < 1 || carddamage > 20)
+                                    {
+                                        Console.Clear();
+                                        Console.WriteLine("How much damage should it have? (1-20)");
+                                        carddamage= int.Parse(Console.ReadLine());
+                                    }
+                                    Console.CursorVisible = false;
+                                    ICard.Element_type element;
+                                    int elementChoose = -1;
+                                    while (elementChoose == -1)
+                                    {
+                                        Console.Clear();
+                                        Console.WriteLine("Choose Element Type");
+                                        Console.WriteLine("[ ] Fire");
+                                        Console.WriteLine("[ ] Water");
+                                        Console.WriteLine("[ ] Normal");
+                                        elementChoose = navigation.moveCursor(3, Console.CursorTop);
+                                    }
+                                    element = (ICard.Element_type)elementChoose;
+                                    ICard.Monster_type monstertype;
+                                    int monsterchoose = -1;
+                                    while (monsterchoose == -1)
+                                    {
+                                        Console.Clear();
+                                        Console.WriteLine("Choose Monster Type");
+                                        Console.WriteLine("[ ] Goblin");
+                                        Console.WriteLine("[ ] Dragon");
+                                        Console.WriteLine("[ ] Wizzard");
+                                        Console.WriteLine("[ ] Knight");
+                                        Console.WriteLine("[ ] Kraken");
+                                        Console.WriteLine("[ ] Elve");
+                                        Console.WriteLine("[ ] Ork");
+                                        Console.WriteLine("[ ] Spell");
+                                        monsterchoose = navigation.moveCursor(8, Console.CursorTop);
+                                    }
+                                    monstertype = (ICard.Monster_type)monsterchoose;
+                                    ICard.Monster_type weakness;
+                                    int weaknesschoose = -1;
+                                    while (weaknesschoose == -1)
+                                    {
+                                        Console.Clear();
+                                        Console.WriteLine("Choose weakness");
+                                        Console.WriteLine("[ ] Goblin");
+                                        Console.WriteLine("[ ] Dragon");
+                                        Console.WriteLine("[ ] Wizzard");
+                                        Console.WriteLine("[ ] Knight");
+                                        Console.WriteLine("[ ] Kraken");
+                                        Console.WriteLine("[ ] Elve");
+                                        Console.WriteLine("[ ] Ork");
+                                        Console.WriteLine("[ ] Spell");
+                                        weaknesschoose = navigation.moveCursor(8, Console.CursorTop);
+                                    }
+                                    weakness = (ICard.Monster_type)weaknesschoose;
+                                    int id = (database.getHighestCardID() + 1);
+                                    ICard customCard = null;
+                                    if(monstertype == ICard.Monster_type.Spell)
+                                    {
+                                        customCard = new SpellCard(id, cardname, carddamage, element, weakness);
+                                    }
+                                    else
+                                    {
+                                        customCard = new MonsterCard(id, cardname, carddamage, element, monstertype, weakness);
+                                    }
+                                    database.createCard(cardname, carddamage, element, monstertype, weakness);
+                                    database.addCardToStack(customCard.id, loggedInUser.id);
+                                    loggedInUser.stack.addCardToStack(customCard);
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        break;
+                    case 5:
                         tempInput = -1;
                         while (tempInput == -1)
                         {
@@ -209,12 +313,12 @@ namespace Monster_Trading_Cards_Game
                                 break;
                         }
                         break;
-                    case 5:
+                    case 6:
                         database.printScoreboard();
                         Console.Write("Press any Key to continue...");
                         Console.ReadLine();
                         break;
-                    case 6:
+                    case 7:
                         while (true)
                         {
                             tempInput = -1;
@@ -253,7 +357,7 @@ namespace Monster_Trading_Cards_Game
                             }
                         }
                         break;
-                    case 7:
+                    case 8:
                         List<int> cardIDs = database.activeTradesCardIDs(loggedInUser.id);
                         string printList = database.activeTradesPrint(loggedInUser.id);
                         string chooseList = database.activeTradesChoose(loggedInUser.id);
@@ -289,7 +393,7 @@ namespace Monster_Trading_Cards_Game
                             }
                         }
                         break;
-                    case 8:
+                    case 9:
                         List<int> tradeIDs = database.allTradeIDs(loggedInUser.id);
                         if(tradeIDs.Count <= 0)
                         {
@@ -358,21 +462,17 @@ namespace Monster_Trading_Cards_Game
                     default:
                         break;
                 }
-            } while (input != 9);
+            } while (input != 10);
             database.Disconnect();
         }
     }
 }
 //TODO
-//Token
-//Unique feature
+//Token3
 //Gegnersuche
 
 //Deck erstellen Console
 //Battle Farben
-
-//Trading damage werte usw anzeigen
-//Deck Creator verbessern
 
 //Register und Login Nullabfragen
 

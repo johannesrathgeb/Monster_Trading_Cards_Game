@@ -46,7 +46,7 @@ namespace Monster_Trading_Cards_Game.Test
         public void searchCard_Exists()
         {
             //act
-            ICard foundCard = stack.searchCard("FireElve");
+            ICard foundCard = stack.searchCard(fireElve);
             //assert
             Assert.AreEqual(fireElve, foundCard);
         }
@@ -55,7 +55,7 @@ namespace Monster_Trading_Cards_Game.Test
         public void searchCard_doesnt_Exist()
         {
             //act
-            ICard foundCard = stack.searchCard("RandomCard");
+            ICard foundCard = stack.searchCard(null);
             //assert
             Assert.AreEqual(null, foundCard);
         }

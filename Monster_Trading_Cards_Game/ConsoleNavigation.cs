@@ -14,7 +14,6 @@ namespace Monster_Trading_Cards_Game
         char specialChar = (char)215;
         ConsoleKeyInfo pressedKey;
 
-        //
         public int moveCursor(int choices, int currentTop)
         {
             int topRows = currentTop - choices;

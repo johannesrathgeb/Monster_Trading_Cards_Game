@@ -294,6 +294,16 @@ namespace Monster_Trading_Cards_Game.Database
             }
         }
 
+        public int getHighestCardID()
+        {
+            cmd = new NpgsqlCommand("SELECT cid FROM cards ORDER BY cid DESC LIMIT 1", connection);
+            reader = cmd.ExecuteReader();
+            reader.Read();
+            int highest = (int)reader[0];
+            reader.Close();
+            return highest;
+        }
+
         public CardStack getStackByID(int userID)
         {
             List<int> cardIDs = new List<int>();
