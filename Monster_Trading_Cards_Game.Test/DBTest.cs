@@ -12,7 +12,7 @@ namespace Monster_Trading_Cards_Game.Test
 {
     class DBTest
     {
-        DB database = new DB();
+        DB database = DB.getInstance();
         [SetUp]
         public void Setup()
         {

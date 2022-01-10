@@ -9,7 +9,7 @@ namespace Monster_Trading_Cards_Game.Cards
 {
     class UploadCardsToDB
     {
-        DB database = new DB();
+        DB database = DB.getInstance();
         
         public void upload()
         {

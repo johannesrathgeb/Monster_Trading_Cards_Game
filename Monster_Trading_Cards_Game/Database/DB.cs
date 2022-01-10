@@ -11,11 +11,22 @@ namespace Monster_Trading_Cards_Game.Database
 {
     public class DB
     {
+        private static DB instance;
+
         const string ConnString = "Host=localhost;Username=postgres;Password=;Database=postgres";
         private NpgsqlConnection connection;
         private NpgsqlCommand cmd;
         private NpgsqlDataReader reader;
         //private NpgsqlBatchCommand testCommand;
+
+        public static DB getInstance()
+        {
+            if (instance == null)
+            {
+                instance = new DB();
+            }
+            return instance;
+        }
 
         public NpgsqlConnection Connect()
         {

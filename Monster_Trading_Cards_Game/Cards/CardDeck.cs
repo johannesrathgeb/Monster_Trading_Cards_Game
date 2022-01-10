@@ -10,7 +10,7 @@ namespace Monster_Trading_Cards_Game
     public class CardDeck
     {
         public List<ICard> cards = new List<ICard>();
-        DB database = new DB();
+        DB database = DB.getInstance();
         public CardDeck(List<ICard> cards)
         {
             this.cards = cards;

@@ -9,7 +9,6 @@ namespace Monster_Trading_Cards_Game
     class ConsoleNavigation
     {
         int lineIndex = 0;
-        int lineIndexTop = 1;
         int tempIndex;
         char specialChar = (char)215;
         ConsoleKeyInfo pressedKey;
