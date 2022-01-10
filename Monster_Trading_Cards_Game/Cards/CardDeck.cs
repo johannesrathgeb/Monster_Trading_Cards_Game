@@ -7,7 +7,7 @@ using Monster_Trading_Cards_Game.Database;
 
 namespace Monster_Trading_Cards_Game
 {
-    class CardDeck
+    public class CardDeck
     {
         public List<ICard> cards = new List<ICard>();
         DB database = new DB();

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Monster_Trading_Cards_Game
 {
-    class Battle
+    public class Battle
     {
         User fighter1, fighter2;
         int roundCounter, winner;

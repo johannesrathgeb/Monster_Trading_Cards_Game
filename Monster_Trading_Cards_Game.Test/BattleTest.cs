@@ -1,22 +1,24 @@
 using NUnit.Framework;
+using Monster_Trading_Cards_Game;
+using Monster_Trading_Cards_Game.Cards;
 
 namespace Monster_Trading_Cards_Game.Test
 {
-    public class UserTest
+    public class BattleTest
     {
         [SetUp]
         public void Setup()
         {
+            
         }
 
         [Test]
         public void Test_setDeck()
         {
             //arrange
-            var input1 = "Test";
-            User user = new Monster_Trading_Cards_Game.User("TestUser", "123", );
+
             //act
-            user.setDeck();
+            
             //assert
             Assert.Pass();
         }

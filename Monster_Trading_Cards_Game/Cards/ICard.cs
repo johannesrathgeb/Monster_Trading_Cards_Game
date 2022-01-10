@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Monster_Trading_Cards_Game
 {
-    interface ICard
+    public interface ICard
     {
         int id { get; }
         string name { get; set; }

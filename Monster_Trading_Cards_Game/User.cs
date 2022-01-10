@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Monster_Trading_Cards_Game
 {
-    class User
+    public class User
     {
         public CardStack stack;
         public CardDeck deck = new CardDeck();

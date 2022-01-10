@@ -96,7 +96,10 @@ namespace Monster_Trading_Cards_Game
                 Console.WriteLine("3.) Buy Pack");
                 Console.WriteLine("4.) Profile");
                 Console.WriteLine("5.) Scoreboard");
-                Console.WriteLine("6.) Exit");
+                Console.WriteLine("6.) Trade Card");
+                Console.WriteLine("7.) Edit active Trades");
+                Console.WriteLine("8.) Watch Trade Offers");
+                Console.WriteLine("9.) Exit");
                 input = int.Parse(Console.ReadLine());
                 switch (input)
                 {
@@ -175,22 +178,94 @@ namespace Monster_Trading_Cards_Game
                         Console.Write("Press any Key to continue...");
                         Console.ReadLine();
                         break;
+                    case 6:
+                        while (true)
+                        {
+                            loggedInUser.stack.printList();
+                            tempInput = int.Parse(Console.ReadLine());
+                            if (!loggedInUser.deck.cards.Contains(loggedInUser.stack.cards[tempInput-1]))
+                            {
+                                Console.WriteLine("Whats your minimun damage requirement to trade?");
+                                int wantedDamage = int.Parse(Console.ReadLine());
+                                Console.WriteLine("Press 1 to search for Spells, press any other key to search for Monsters");
+                                int wantedType = int.Parse(Console.ReadLine());
+                                if(wantedType != 1)
+                                {
+                                    wantedType = 0;
+                                }
+                                database.tradeCard(loggedInUser.stack.cards[tempInput-1].id, loggedInUser.id, wantedDamage, wantedType);
+                                loggedInUser.stack.cards.Remove(loggedInUser.stack.cards[tempInput-1]);
+                                break;
+                            }
+                        }
+                        break;
+                    case 7:
+                        List<int> cardIDs = database.printActiveTrades(loggedInUser.id);
+                        Console.WriteLine("Press 1 to cancel a trade offer");
+                        tempInput = int.Parse(Console.ReadLine());
+                        if (tempInput == 1)
+                        {
+                            Console.WriteLine("Select Trade to cancel by Card ID");
+                            int cardID = int.Parse(Console.ReadLine());
+                            if (cardIDs.Contains(cardID)){
+                                database.cancelTrade(cardID, loggedInUser.id);
+                                loggedInUser.stack.addCardToStack(database.getCardByID(cardID));
+                            }
+                            else
+                            {
+                                Console.WriteLine("Card not found!");
+                                Console.Write("Press any Key to continue...");
+                                Console.ReadLine();
+                            }
+                        }
+                        break;
+                    case 8:
+                        List<int> tradeIDs = database.printAllTrades(loggedInUser.id);
+
+                        Console.WriteLine("Select Trade to accept by Card ID");
+                        int tradeID = int.Parse(Console.ReadLine());
+                        if (tradeIDs.Contains(tradeID))
+                        {
+                            Console.Clear();
+                            loggedInUser.stack.printList();
+                            Console.WriteLine("What Card do you want to trade?");
+                            tempInput = int.Parse(Console.ReadLine());
+                            if (!loggedInUser.deck.cards.Contains(loggedInUser.stack.cards[tempInput-1]))
+                            {
+                                int[] ids = database.acceptTradeOffer(tradeID, loggedInUser.id);
+                                loggedInUser.stack.addCardToStack(database.getCardByID(ids[0]));
+                                database.returnCardForTrade(ids[1], tempInput, loggedInUser.id);
+                            }
+                            else
+                            {
+                                Console.WriteLine("Card is in your Deck!");
+                                Console.Write("Press any Key to continue...");
+                                Console.ReadLine();
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("Trade not found!");
+                            Console.Write("Press any Key to continue...");
+                            Console.ReadLine();
+                        }
+                        break;
                     default:
                         break;
                 }
-            } while (input != 6);
+            } while (input != 9);
             database.Disconnect();
         }
     }
 }
 //TODO
+//Unit Testing
+
 //Deck Creator verbessern
 //Gegnersuche
-//Trading
-//DB Abfragen bearbeiten
 //Register und Login Nullabfragen
 //Token
 //Battle Logic alle ausnahmefälle einbinden
-//Unit Testing
 //evtl neue Karten erstellen
 //Class Diagram
+//DB Singleton

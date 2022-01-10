@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Monster_Trading_Cards_Game
 {
-    class CardStack
+    public class CardStack
     {
-        List<ICard> cards = new List<ICard>();
+        public List<ICard> cards = new List<ICard>();
 
         public CardStack(List<ICard> cardList)
         {
@@ -40,9 +40,11 @@ namespace Monster_Trading_Cards_Game
         }
         public void printList()
         {
+            int i = 1;
             foreach (ICard card in cards)
-            {
-                Console.WriteLine(card.name);
+            {                
+                Console.WriteLine(i + ".) " + card.name);
+                i++;
             }
         }
 
