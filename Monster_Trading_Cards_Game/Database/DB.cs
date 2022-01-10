@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 
 namespace Monster_Trading_Cards_Game.Database
 {
-    class DB
+    public class DB
     {
         const string ConnString = "Host=localhost;Username=postgres;Password=;Database=postgres";
         private NpgsqlConnection connection;
