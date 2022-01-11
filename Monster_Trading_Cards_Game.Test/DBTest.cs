@@ -24,7 +24,7 @@ namespace Monster_Trading_Cards_Game.Test
         {
             //act
             database.Connect();
-            string password = database.getUserPW("test");
+            string password = database.getUserPW("testUser");
             database.Disconnect();
             //assert
             Assert.AreEqual("123", password);
@@ -35,7 +35,7 @@ namespace Monster_Trading_Cards_Game.Test
         {
             //act
             database.Connect();
-            bool exists = database.userExists("test");
+            bool exists = database.userExists("testUser");
             database.Disconnect();
             //assert
             Assert.AreEqual(true, exists);
