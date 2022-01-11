@@ -14,8 +14,7 @@ namespace Monster_Trading_Cards_Game
         static void Main(string[] args)
         {
             //Upload Cards to Database
-            //UploadCardsToDB cardUpload = new UploadCardsToDB();
-            //cardUpload.upload();
+            //UploadCardsToDB.upload();
 
             //DB Connection
             DB database = DB.getInstance();

@@ -30,7 +30,7 @@ namespace Monster_Trading_Cards_Game
             {
                 database.Connect();
                 database.addCardToDeck(card.id, userID);
-                database.Disconnect();
+                
                 cards.Add(card);
                 return true;
             }

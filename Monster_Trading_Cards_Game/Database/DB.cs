@@ -303,6 +303,7 @@ namespace Monster_Trading_Cards_Game.Database
             {
                 Console.WriteLine(reader[0] + "     " + reader[1]);
             }
+            reader.Close();
         }
 
         public int getHighestCardID()
